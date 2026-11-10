@@ -1,0 +1,10 @@
+[project]
+name = "ecom-ai-cs"
+version = "0.1.0"
+description = "电商 AI 客服最小服务（企业流程演练）"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

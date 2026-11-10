@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# 环境与密钥（绝对不能提交）
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 运行产物
+logs/
+tmp/
+*.log
