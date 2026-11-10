@@ -1,14 +1,19 @@
 # CODEOWNERS
+
 # 作用：这些路径的改动，必须由指定的人（或团队）评审通过才能合并。
+
 # 首次使用时，把下面的占位符换成你自己的 GitHub 用户名，例如 @ray-cn
 
-*                       @YOUR_GITHUB_USERNAME
+-                       @ray-cn
 
 # 核心链路：对话编排与转人工逻辑，改动风险最高
-/src/ecom_cs/service.py  @YOUR_GITHUB_USERNAME
+
+/src/ecom_cs/service.py @ray-cn
 
 # CI 与仓库配置：只有负责人能改，防止有人绕过门禁
-/.github/               @YOUR_GITHUB_USERNAME
+
+/.github/ @ray-cn
 
 # 文档与架构决策
-/docs/adr/              @YOUR_GITHUB_USERNAME
+
+/docs/adr/ @ray-cn
