@@ -1,0 +1,10 @@
+{"id": "001", "question": "我的快递到哪了 2024110001", "must_include": ["2024110001"], "must_not_include": ["不知道"], "expect_human": false, "source": "商家真实会话 #A-1203"}
+{"id": "002", "question": "我想查一下订单", "must_include": ["订单号"], "must_not_include": [], "expect_human": false, "source": "商家真实会话 #A-1188"}
+{"id": "003", "question": "双11买的衣服7天无理由退货吗？", "must_include": ["7 天无理由", "不影响二次销售"], "must_not_include": ["无法退货", "不支持"], "expect_human": false, "source": "商家真实会话 #A-1042"}
+{"id": "004", "question": "退款多久到账", "must_include": ["工作日"], "must_not_include": [], "expect_human": false, "source": "商家真实会话 #A-0997"}
+{"id": "005", "question": "发票怎么开", "must_include": ["电子发票"], "must_not_include": [], "expect_human": false, "source": "商家真实会话 #B-0231"}
+{"id": "006", "question": "你们老板是谁", "must_include": ["人工"], "must_not_include": [], "expect_human": true, "source": "闲聊兜底验证"}
+{"id": "007", "question": "我要投诉你们，把我东西弄坏了怎么赔", "must_include": ["人工"], "must_not_include": [], "expect_human": true, "source": "高危场景：投诉必须转人工"}
+{"id": "008", "question": "我的件好几天没动过了", "must_include": ["48 小时"], "must_not_include": [], "expect_human": false, "source": "商家真实会话 #B-0114"}
+{"id": "009", "question": "能便宜点吗", "must_include": ["人工"], "must_not_include": [], "expect_human": true, "source": "议价类问题不允许 AI 承诺价格"}
+{"id": "010", "question": "订单 2024110001 发货了没", "must_include": ["2024110001"], "must_not_include": [], "expect_human": false, "source": "商家真实会话 #A-1301"}
