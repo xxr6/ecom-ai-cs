@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>企业级开发流程 · 12 幕实操演练手册</title>
+<style>
+:root {
+  --bg: #f7f7f5; --paper: #ffffff; --ink: #1f1f1f; --muted: #6b6b6b;
+  --line: #e3e2dd; --accent: #1d9e75; --accent-soft: #e1f5ee;
+  --code-bg: #f6f6f4; --warn-bg: #fdf6e3; --warn-line: #e8d9a8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", Roboto, sans-serif;
+  font-size: 15px; line-height: 1.75;
+}
+header.top {
+  position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96);
+  border-bottom: 1px solid var(--line); padding: 10px 24px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+header.top .brand { font-weight: 500; font-size: 15px; }
+header.top .brand small { color: var(--muted); font-weight: 400; margin-left: 8px; }
+.progress-wrap { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.progress { width: 220px; height: 6px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.progress > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+#progress-text { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+button.reset { font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); background: #fff;
+  border-radius: 6px; cursor: pointer; color: var(--muted); }
+button.reset:hover { color: var(--ink); border-color: #bbb; }
+.layout { display: flex; align-items: flex-start; gap: 0; }
+nav.toc {
+  position: sticky; top: 57px; flex: 0 0 268px; max-height: calc(100vh - 57px);
+  overflow-y: auto; padding: 20px 12px 40px 24px; font-size: 13px;
+}
+nav.toc .toc-title { font-size: 12px; color: var(--muted); letter-spacing: .08em; margin-bottom: 10px; }
+nav.toc ul { list-style: none; margin: 0; padding: 0; }
+nav.toc li { margin: 1px 0; }
+nav.toc a { display: block; padding: 4px 8px; border-radius: 6px; color: #4a4a4a; text-decoration: none;
+  border-left: 2px solid transparent; }
+nav.toc a:hover { background: #eeece6; color: #111; }
+nav.toc a.active { background: var(--accent-soft); color: #0f6e56; border-left-color: var(--accent); }
+nav.toc a.toc-scene { font-weight: 500; color: #222; }
+nav.toc li.sub a { padding-left: 20px; color: var(--muted); font-weight: 400; }
+main { flex: 1 1 auto; min-width: 0; max-width: 860px; margin: 0 auto; padding: 28px 40px 120px; }
+h1 { font-size: 26px; font-weight: 500; margin: 8px 0 4px; letter-spacing: -.01em; }
+h2 { font-size: 20px; font-weight: 500; margin: 0; }
+h3 { font-size: 16px; font-weight: 500; margin: 26px 0 8px; }
+h4 { font-size: 15px; font-weight: 500; margin: 18px 0 6px; }
+section.scene { background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+  padding: 22px 26px; margin: 20px 0; }
+section.scene.done { border-color: #bfe3d4; background: #fcfefd; }
+section.plain { margin: 20px 0; }
+.scene-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-bottom: 12px; border-bottom: 1px dashed var(--line); margin-bottom: 6px; }
+label.done { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted);
+  cursor: pointer; user-select: none; white-space: nowrap; padding: 3px 10px; border: 1px solid var(--line);
+  border-radius: 20px; background: #fff; }
+label.done input { margin: 0; accent-color: var(--accent); }
+label.done:has(input:checked) { color: #0f6e56; border-color: #9fe1cb; background: var(--accent-soft); }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0; padding-left: 22px; }
+li { margin: 3px 0; }
+strong { font-weight: 500; }
+code { font-family: "Cascadia Code", Consolas, Menlo, monospace; font-size: 13px;
+  background: #efeee9; padding: 1px 5px; border-radius: 4px; }
+.codebox { margin: 12px 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  background: var(--code-bg); }
+.codebar { display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 12px; background: #efeee9; border-bottom: 1px solid var(--line);
+  font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+.codebar .copy { font-size: 11px; padding: 2px 10px; border: 1px solid var(--line); background: #fff;
+  border-radius: 5px; cursor: pointer; color: #555; }
+.codebar .copy:hover { border-color: #bbb; color: #111; }
+.codebar .copy.ok { background: var(--accent); color: #fff; border-color: var(--accent); }
+pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+pre code { background: none; padding: 0; font-size: 13px; line-height: 1.7; }
+blockquote { margin: 12px 0; padding: 10px 14px; background: var(--warn-bg);
+  border-left: 3px solid var(--warn-line); border-radius: 0 8px 8px 0; color: #4a3f1e; }
+blockquote p { margin: 0; font-size: 14px; }
+.table-wrap { overflow-x: auto; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; background: #fff; }
+th, td { border: 1px solid var(--line); padding: 7px 12px; text-align: left; vertical-align: top; }
+th { background: #f2f1ec; font-weight: 500; }
+hr.divider { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+a { color: #0f6e56; }
+footer.end { margin-top: 40px; color: var(--muted); font-size: 13px; text-align: center; }
+@media (max-width: 900px) {
+  nav.toc { display: none; }
+  main { padding: 20px 18px 80px; }
+  header.top { padding: 8px 16px; }
+  .progress { width: 120px; }
+}
+@media print {
+  header.top, nav.toc, .codebar .copy, label.done { display: none !important; }
+  body { background: #fff; }
+  main { max-width: none; padding: 0; }
+  section.scene { break-inside: avoid; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">企业级开发流程 · 12 幕实操演练<small>ecom-ai-cs</small></div>
+  <div class="progress-wrap">
+    <div class="progress"><i id="progress-bar"></i></div>
+    <span id="progress-text">0 / 0</span>
+    <button class="reset" id="print" type="button">打印 / 存 PDF</button>
+    <button class="reset" id="reset" type="button">重置进度</button>
+  </div>
+</header>
+<div class="layout">
+<nav class="toc"><div class="toc-title">目录</div><ul><li><a href="#sec-1" data-target="sec-1">企业级开发流程 · 12 幕实操演练手册</a></li><li><a href="#sec-2" data-target="sec-2">开工前：确认你拿到的仓库是&quot;活的&quot;</a></li><li><a href="#sec-3" data-target="sec-3">演练地图</a></li><li><a href="#sec-4" class="toc-scene" data-target="sec-4">幕 0 · 环境与建仓</a></li><li><a href="#sec-8" class="toc-scene" data-target="sec-8">幕 1 · 立规矩（第一个 PR）</a></li><li><a href="#sec-13" class="toc-scene" data-target="sec-13">幕 2 · 领需求（建 Issue = 写 Backlog 卡）</a></li><li><a href="#sec-17" class="toc-scene" data-target="sec-17">幕 3 · 开工（拉分支 + 写代码）</a></li><li><a href="#sec-22" class="toc-scene" data-target="sec-22">幕 4 · 自测（上线前必须过三关）</a></li><li><a href="#sec-23" class="toc-scene" data-target="sec-23">幕 5 · 提交（写得像给未来的同事看）</a></li><li><a href="#sec-25" class="toc-scene" data-target="sec-25">幕 6 · 交作业（发 PR，让代码从门里进）</a></li><li><a href="#sec-27" class="toc-scene" data-target="sec-27">幕 7 · CI 红灯演练（故意弄红一次，你才懂绿灯的价值）</a></li><li><a href="#sec-33" class="toc-scene" data-target="sec-33">幕 8 · 评审（你被&quot;挑刺&quot;，然后体面地改）</a></li><li><a href="#sec-39" class="toc-scene" data-target="sec-39">幕 9 · 合并（把 N 次提交压成 1 条干净历史）</a></li><li><a href="#sec-41" class="toc-scene" data-target="sec-41">幕 10 · 发布（打 tag + 写 Release）</a></li><li><a href="#sec-43" class="toc-scene" data-target="sec-43">幕 11 · 线上救火（hotfix 通道，S0 故障）</a></li><li><a href="#sec-52" class="toc-scene" data-target="sec-52">幕 12 · 复盘（把事故变成资产）</a></li><li><a href="#sec-53" data-target="sec-53">通关后你应该能回答这 8 个问题</a></li><li><a href="#sec-54" data-target="sec-54">附：一周工作节奏（把 12 幕变成日常）</a></li></ul></nav>
+<main>
+<h1 id="sec-1">企业级开发流程 · 12 幕实操演练手册</h1><blockquote><p>使用者：你（开发同学）<br>场地：本地仓库 <code>电商团队开发/ecom-ai-cs</code>，远程 GitHub 仓库<br>通关标准：12 幕全部走完，你的仓库里会留下 1 个需求 Issue、2 个 PR、2 个 tag、1 份复盘</p></blockquote><section class="plain" id="sec-2"><h2 id="sec-2">开工前：确认你拿到的仓库是&quot;活的&quot;</h2><p>在仓库根目录执行，三行都要通过再往下走：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>cd &quot;C:/Users/Administrator/WorkBuddy/电商团队开发/ecom-ai-cs&quot;
+git log --oneline -3          # 应看到 8 条提交，最新是 docs(onboarding)
+git branch                    # 应有 main 与 develop，当前在 develop
+python -m pytest -q           # 应输出 18 passed</code></pre></div><p><strong>当前仓库状态（交付时实测）</strong></p><div class="table-wrap"><table><thead><tr><th>项</th><th>值</th></tr></thead><tbody><tr><td>提交数</td><td>10 条（<code>git log --oneline</code> 可查完整历史）</td></tr><tr><td>分支</td><td><code>main</code>、<code>develop</code>（内容一致）</td></tr><tr><td>单元测试</td><td>18 个，全绿</td></tr><tr><td>AI 评测集</td><td>10 题，合格率 100%</td></tr><tr><td>手册里的代码</td><td>我已在临时分支实跑验证后回退，你看到的是干净起点</td></tr></tbody></table></div><blockquote><p>也就是说：<strong>手册第 3 幕、第 11 幕给你的代码，都是跑通过的</strong>。如果报错，先怀疑自己少复制了一行，而不是代码写错。</p></blockquote></section><section class="plain" id="sec-3"><h2 id="sec-3">演练地图</h2><div class="table-wrap"><table><thead><tr><th>幕</th><th>场景</th><th>你要做的核心动作</th><th>预计耗时</th></tr></thead><tbody><tr><td>0</td><td>环境与建仓</td><td>仓库推到 GitHub，配好身份</td><td>15 分钟</td></tr><tr><td>1</td><td>立规矩</td><td>开分支保护、改 CODEOWNERS（你的第一个 PR）</td><td>15 分钟</td></tr><tr><td>2</td><td>领需求</td><td>用 Issue 模板建一张需求卡</td><td>10 分钟</td></tr><tr><td>3</td><td>开工</td><td>从 develop 拉 feature 分支写代码</td><td>40 分钟</td></tr><tr><td>4</td><td>自测</td><td>跑测试、跑评测集、手动试</td><td>15 分钟</td></tr><tr><td>5</td><td>提交</td><td>按规范 commit，看懂 git log</td><td>10 分钟</td></tr><tr><td>6</td><td>交作业</td><td>push + 发 PR，关联 Issue</td><td>10 分钟</td></tr><tr><td>7</td><td>CI 红灯</td><td>故意弄红，看 Actions，再修绿</td><td>15 分钟</td></tr><tr><td>8</td><td>评审</td><td>模拟评审人提意见，你逐条回应修改</td><td>20 分钟</td></tr><tr><td>9</td><td>合并</td><td>Squash 合并、删分支、本地同步</td><td>10 分钟</td></tr><tr><td>10</td><td>发布</td><td>打 tag、写 Release 说明</td><td>10 分钟</td></tr><tr><td>11</td><td>线上救火</td><td>模拟 S0 故障，走 hotfix 通道救火</td><td>25 分钟</td></tr><tr><td>12</td><td>复盘</td><td>补 Issue、写复盘文档</td><td>15 分钟</td></tr></tbody></table></div><hr class="divider"></section><section class="scene" id="sec-4"><div class="scene-head"><h2 id="sec-4">幕 0 · 环境与建仓</h2><label class="done"><input type="checkbox" data-scene="sec-4"><span>已完成</span></label></div><h3 id="sec-5">你要做的</h3><p><strong>0.1 配好本地 Git 身份</strong>（已配好可跳过，检查一下）</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git config --global user.name
+git config --global user.email</code></pre></div><p>预期输出：<code>Ray</code> 和 <code>2077203929@qq.com</code>。若为空则执行：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git config --global user.name &quot;你的名字&quot;
+git config --global user.email &quot;你的邮箱&quot;</code></pre></div><p><strong>0.2 在 GitHub 上建空仓库</strong></p><p>打开 <a href="https://github.com/new" target="_blank" rel="noopener">https://github.com/new</a> ，填写：</p><div class="table-wrap"><table><thead><tr><th>字段</th><th>填什么</th><th>注意</th></tr></thead><tbody><tr><td>Repository name</td><td><code>ecom-ai-cs</code></td><td>和本地目录同名</td></tr><tr><td>Description</td><td>电商 AI 客服（企业流程演练）</td><td></td></tr><tr><td>可见性</td><td><strong>Public</strong></td><td>免费账号的私有仓库不支持分支保护、Actions 分钟数也受限，演练请用 Public（仓库内无真实业务数据）</td></tr><tr><td>Initialize this repository</td><td><strong>什么都不勾</strong></td><td>千万别勾 README/gitignore，否则会和本地历史冲突</td></tr></tbody></table></div><p><strong>0.3 把本地仓库推上去</strong></p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>cd &quot;C:/Users/Administrator/WorkBuddy/电商团队开发/ecom-ai-cs&quot;
+git remote add origin https://github.com/&lt;你的用户名&gt;/ecom-ai-cs.git
+git push -u origin main
+git push -u origin develop</code></pre></div><blockquote><p>推送时会弹浏览器让你登录 GitHub 授权（Git Credential Manager 自动处理），登录后即成功。</p></blockquote><p>预期输出结尾：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code> * [new branch]      main -&gt; main
+branch &#x27;main&#x27; set up to track &#x27;origin/main&#x27;.
+ * [new branch]      develop -&gt; develop</code></pre></div><p><strong>0.4 验证</strong></p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git remote -v
+git branch -a</code></pre></div><p>预期看到 <code>origin/main</code>、<code>origin/develop</code> 四条记录。</p><h3 id="sec-6">为什么企业要这么做</h3><ul><li>先建空仓库再推本地，是为了保留你自己写的提交历史；在网页勾选 README 会产生一个&quot;孤儿提交&quot;，第一次 push 就会冲突——这是新人最常踩的坑</li><li><code>main</code> 与 <code>develop</code> 两条线：main 对应生产，develop 是日常集成，功能永远不直接落 main</li></ul><h3 id="sec-7">卡住了怎么办</h3><ul><li><code>error: remote origin already exists</code> → <code>git remote remove origin</code> 后重新 add</li><li><code>Authentication failed</code> → 检查是否用了密码；GitHub 早已禁止密码推送，需 Personal Access Token（Settings → Developer settings → Tokens）或用浏览器授权</li></ul><hr class="divider"></section><section class="scene" id="sec-8"><div class="scene-head"><h2 id="sec-8">幕 1 · 立规矩（第一个 PR）</h2><label class="done"><input type="checkbox" data-scene="sec-8"><span>已完成</span></label></div><p>这一幕你会干两件事：改 CODEOWNERS 里的占位符（<strong>用 PR 改，不直接 push</strong>），以及开启分支保护。</p><h3 id="sec-9">1 改 CODEOWNERS 走 PR 流程</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout develop
+git pull
+git checkout -b chore/set-codeowners</code></pre></div><p>用编辑器把 <code>.github/CODEOWNERS</code> 里所有 <code>@YOUR_GITHUB_USERNAME</code> 改成你的真实用户名（例如 <code>@ray-cn</code>），然后：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git add .github/CODEOWNERS
+git commit -m &quot;chore(codeowners): 替换为真实仓库负责人&quot;
+git push -u origin chore/set-codeowners</code></pre></div><p>然后打开 <a href="https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/compare/develop...chore/set-codeowners" target="_blank" rel="noopener">https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/compare/develop...chore/set-codeowners</a> ，点 <strong>Create pull request</strong>，标题填 <code>chore(codeowners): 替换为真实仓库负责人</code>，描述里写：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>把 CODEOWNERS 占位符替换为实际负责人，否则核心模块评审规则不生效。
+影响范围：仅仓库配置，无业务代码改动。</code></pre></div><p>点 <strong>Create pull request</strong> → 等 CI 跑完（约 1 分钟，页面底部出现绿色 ✓）→ 点 <strong>Squash and merge</strong> → <strong>Confirm</strong> → 点 <strong>Delete branch</strong>。</p><p>本地同步：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout develop &amp;&amp; git pull &amp;&amp; git branch -d chore/set-codeowners</code></pre></div><h3 id="sec-10">2 开启分支保护（这是&quot;规矩&quot;真正生效的地方）</h3><p>打开 <code>https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/settings/branches</code> → <strong>Add branch protection rule</strong>：</p><p><strong>规则一：保护 main</strong></p><div class="table-wrap"><table><thead><tr><th>配置项</th><th>值</th></tr></thead><tbody><tr><td>Branch name pattern</td><td><code>main</code></td></tr><tr><td>Require a pull request before merging</td><td>✅ 勾选</td></tr><tr><td>Require approvals</td><td>1（想单人演练可先填 0，见幕 8 说明）</td></tr><tr><td>Require status checks to pass</td><td>✅ 勾选，然后搜索并选中 <code>单元测试与评测</code>、<code>PR 标题规范检查</code></td></tr><tr><td>Require conversation resolution before merging</td><td>✅ 勾选（评论必须点 Resolve 才能合）</td></tr><tr><td>Do not allow bypassing the above settings</td><td>✅ 勾选（管理员也不能绕）</td></tr><tr><td>Allow force pushes</td><td>❌ 不勾</td></tr></tbody></table></div><p><strong>规则二：保护 develop</strong> —— 同上一套，<code>Require approvals</code> 填 0（自己开发自己合，但 CI 必须绿）。</p><p>同时到 <code>Settings → Actions → General</code>，确认 <strong>Allow all actions and reusable workflows</strong> 已选中。</p><h3 id="sec-11">预期看到什么</h3><ul><li>规则建好后，你尝试 <code>git push origin main</code> 直接推一个空提交，会被拒绝：</li></ul><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>remote: error: GH006: Protected branch update failed for refs/heads/main.
+remote: error: Changes must be made through a pull request.</code></pre></div><p><strong>看到这条报错就是成功了</strong> —— 这是企业里&quot;分支被锁住&quot;的真实体感。</p><h3 id="sec-12">为什么企业要这么做</h3><p>分支保护把&quot;靠自觉&quot;变成&quot;靠系统&quot;。没有它，任何人一条 <code>git push -f</code> 就能覆盖线上代码；有了它，代码只能从 PR 进来，且必须过 CI 和评审——<strong>规矩不依赖人的品格，依赖配置</strong>。</p><hr class="divider"></section><section class="scene" id="sec-13"><div class="scene-head"><h2 id="sec-13">幕 2 · 领需求（建 Issue = 写 Backlog 卡）</h2><label class="done"><input type="checkbox" data-scene="sec-13"><span>已完成</span></label></div><h3 id="sec-14">你要做的</h3><p>打开 <a href="https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/issues/new/choose" target="_blank" rel="noopener">https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/issues/new/choose</a> ，选择 <strong>需求（Feature Request）</strong>，按模板填：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>标题：【功能】机器人回答后推荐 3 个相关追问
+优先级：P1 重要
+背景：灰度数据显示 38% 的用户转人工是因为不知道还能问什么，不是问题解决不了。
+期望方案：每次机器人回答下方展示最多 3 条推荐追问，点击即作为新问题发送。
+验收标准：
+1. 返回结果带 suggestions 字段，长度 ≤ 3
+2. 推荐内容与识别的意图相关
+3. 转人工或识别不出意图时返回空列表
+4. 每条推荐能被本系统正确识别（点了能答）
+5. 现有测试与评测集不回归
+影响范围：对话编排 service.py、新增 suggestions 模块；建议灰度</code></pre></div><p>点 <strong>Submit new issue</strong>，右上角会出现编号，例如 <strong>#1</strong>。<strong>记住这个编号</strong>。</p><p>需求细节可以直接引用仓库里的 PRD：<code>docs/prd/REQ-101-followup-suggestions.md</code>。</p><h3 id="sec-15">为什么企业要这么做</h3><p>Issue 就是&quot;明面上的排队表&quot;。所有工作从一张卡开始，好处是：三个月后有人问&quot;这个功能为什么做&quot;，能翻到当初的验收标准；而不是靠谁记性好。</p><h3 id="sec-16">卡住了怎么办</h3><ul><li>看不到模板 → 检查 <code>.github/ISSUE_TEMPLATE/</code> 是否已推送（幕 1 的第一个 PR 合进去后就有了）</li></ul><hr class="divider"></section><section class="scene" id="sec-17"><div class="scene-head"><h2 id="sec-17">幕 3 · 开工（拉分支 + 写代码）</h2><label class="done"><input type="checkbox" data-scene="sec-17"><span>已完成</span></label></div><h3 id="sec-18">1 拉分支</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout develop
+git pull
+git checkout -b feature/followup-suggest</code></pre></div><p><strong>判断标准</strong>：<code>git branch</code> 里当前分支前面有 <code>*</code>，且名字是 <code>feature/followup-suggest</code>。</p><h3 id="sec-19">2 写代码（三步改动）</h3><p><strong>改动 1：新建 <code>src/ecom_cs/suggestions.py</code></strong></p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>&quot;&quot;&quot;追问推荐：回答后引导用户继续提问。
+
+硬性要求（PRD 验收标准第 4 条）：每条推荐都必须是本系统能正确识别的问法，
+否则用户点了一下反而得到&quot;转人工&quot;，体验比没有推荐更差。
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from .intent import LOGISTICS, ORDER, REFUND
+
+# 每个意图对应的推荐问法
+_SUGGESTIONS: dict[str, list[str]] = {
+    LOGISTICS: [&quot;退款多久到账&quot;, &quot;物流不更新怎么办&quot;, &quot;发票怎么开&quot;],
+    ORDER: [&quot;我的快递到哪了&quot;, &quot;退款多久到账&quot;, &quot;发票怎么开&quot;],
+    REFUND: [&quot;退款多久到账&quot;, &quot;发票怎么开&quot;, &quot;我的订单到哪了&quot;],
+}
+
+MAX_SUGGESTIONS = 3
+
+
+def suggest(intent: str) -&gt; list[str]:
+    &quot;&quot;&quot;返回该意图下的推荐追问，最多 3 条；无匹配时返回空列表。&quot;&quot;&quot;
+    return list(_SUGGESTIONS.get(intent, []))[:MAX_SUGGESTIONS]</code></pre></div><p><strong>改动 2：修改 <code>src/ecom_cs/service.py</code></strong></p><p>第一处，导入区加一行：</p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>from .suggestions import suggest</code></pre></div><p>第二处，把 <code>_reply</code> 函数改成带 <code>suggestions</code> 参数的版本：</p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>def _reply(
+    text: str,
+    intent: str,
+    *,
+    transfer_to_human: bool = False,
+    sources: list[str] | None = None,
+    action: str = &quot;answer&quot;,
+) -&gt; dict[str, Any]:
+    # 转人工与追问订单号时不推荐，避免用户被引到别的话题
+    followups = [] if transfer_to_human or action != &quot;answer&quot; else suggest(intent)
+    return {
+        &quot;reply&quot;: text,
+        &quot;intent&quot;: intent,
+        &quot;need_human&quot;: transfer_to_human,
+        &quot;sources&quot;: sources or [],
+        &quot;action&quot;: action,
+        &quot;suggestions&quot;: followups,
+    }</code></pre></div><p><strong>改动 3：新建 <code>tests/test_suggestions.py</code></strong></p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>&quot;&quot;&quot;追问推荐测试：数量、相关性、以及&quot;点了能答&quot;的闭环校验。&quot;&quot;&quot;
+
+from ecom_cs.intent import LOGISTICS, OTHER, REFUND
+from ecom_cs.service import handle
+from ecom_cs.suggestions import MAX_SUGGESTIONS, suggest
+
+
+class TestSuggest:
+    def test_logistics_intent_returns_at_most_three(self):
+        items = suggest(LOGISTICS)
+        assert 1 &lt;= len(items) &lt;= MAX_SUGGESTIONS
+
+    def test_other_intent_returns_empty(self):
+        assert suggest(OTHER) == []
+
+    def test_every_suggestion_can_be_answered(self):
+        # 闭环校验：推荐的话术点下去必须能得到答案，而不是被转人工
+        # 判定标准是&quot;不需要转人工&quot;，而不是&quot;检测出某个意图&quot;——
+        # 像&quot;发票怎么开&quot;这类问题意图是 other，但知识库能答，同样算闭环。
+        for intent in (LOGISTICS, REFUND):
+            for item in suggest(intent):
+                result = handle(item)
+                assert result[&quot;need_human&quot;] is False, f&quot;推荐语点了答不上：{item}&quot;
+
+
+class TestServiceIntegration:
+    def test_answer_carries_suggestions(self):
+        result = handle(&quot;双11买的衣服7天无理由退货吗？&quot;)
+        assert result[&quot;suggestions&quot;]
+        assert len(result[&quot;suggestions&quot;]) &lt;= 3
+
+    def test_transfer_to_human_has_no_suggestions(self):
+        result = handle(&quot;你们老板是谁&quot;)
+        assert result[&quot;need_human&quot;] is True
+        assert result[&quot;suggestions&quot;] == []</code></pre></div><blockquote><p><strong>踩坑提示（我实测时踩过）</strong>：第一版写的是 <code>assert detect_intent(item) != OTHER</code>，<br>结果 <code>发票怎么开</code> 直接失败——它在规则引擎里意图就是 <code>other</code>，但知识库能正常回答。<br>这说明<strong>验收标准要用&quot;用户视角&quot;表述</strong>（点了有没有答案），而不是用内部实现细节（识别出什么意图）。<br>若按实现写测试，你会误删一条本来好用的推荐。</p></blockquote><h3 id="sec-20">为什么企业要这么做</h3><ul><li>新建文件而不是把逻辑塞进 <code>service.py</code>：模块单一职责，评审时改动范围一目了然</li><li>测试里那条 <code>test_every_suggestion_is_recognizable</code> 是把 PRD 的验收标准<strong>变成代码</strong></li><li>分支名 <code>feature/followup-suggest</code> 让任何人看分支列表就知道在做什么</li></ul><h3 id="sec-21">卡住了怎么办</h3><ul><li>改完启动报 <code>ModuleNotFoundError: ecom_cs</code> → 用 <code>python chat.py &quot;...&quot;</code> 或 <code>pytest</code>（已配 <code>pythonpath=src</code>），别用 <code>python -m ecom_cs.cli</code></li></ul><hr class="divider"></section><section class="scene" id="sec-22"><div class="scene-head"><h2 id="sec-22">幕 4 · 自测（上线前必须过三关）</h2><label class="done"><input type="checkbox" data-scene="sec-22"><span>已完成</span></label></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>pytest -q
+python scripts/run_eval.py
+python chat.py &quot;双11买的衣服7天无理由退货吗&quot;</code></pre></div><p>预期输出：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>..................                                       [100%]   ← 18 个旧用例
+新增用例后应为 23 passed
+----------------------------------------------------
+共 10 题 | 通过 10 | 合格率 100% | 门槛 85%
+结论：达标，可以进入评审。
+
+用户：双11买的衣服7天无理由退货吗
+机器人：支持 7 天无理由退货，商品需不影响二次销售，退货运费由买家承担。
+详情：意图=refund 转人工=False 引用=[&#x27;refund-7days&#x27;]</code></pre></div><blockquote><p><code>chat.py</code> 目前还不打印 suggestions（前端才会渲染），这不影响本幕验收。</p></blockquote><p><strong>三关的意义</strong>：单测保证&quot;代码逻辑对&quot;，评测集保证&quot;回答质量没退步&quot;，手动试保证&quot;人觉得对&quot;。三者都过才允许提交 PR——顺序别反，先跑测试再提交，能省你两轮 CI 等待。</p><hr class="divider"></section><section class="scene" id="sec-23"><div class="scene-head"><h2 id="sec-23">幕 5 · 提交（写得像给未来的同事看）</h2><label class="done"><input type="checkbox" data-scene="sec-23"><span>已完成</span></label></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git status                 # 先看清改了哪些文件，确认没有 .env、日志混进来
+git diff                   # 逐行看自己的改动（很多 Bug 在这一步被自己发现）
+git add src/ecom_cs/suggestions.py src/ecom_cs/service.py tests/test_suggestions.py
+git commit -m &quot;feat(chat): 回答后推荐 3 个相关追问
+
+- 新增 suggestions 模块，按意图返回推荐问法
+- service 返回体增加 suggestions 字段，转人工时为空
+- 补充测试，校验推荐语可被识别（闭环可问）&quot;</code></pre></div><p>查看成果：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git log --oneline -3</code></pre></div><p>预期：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>a1b2c3d feat(chat): 回答后推荐 3 个相关追问
+21ee0c0 docs: 补充架构决策、PRD 与值班手册
+...</code></pre></div><p><strong>提交前自检</strong>：<code>git status</code> 里不应该出现 <code>.venv/</code>、<code>.pytest_cache/</code>、任何密钥文件（<code>.gitignore</code> 已经帮你挡了，但要确认）。</p><h3 id="sec-24">为什么企业要这么做</h3><ul><li>一个提交只做一件事 → 出问题能精确回滚</li><li>提交信息写&quot;做了什么 + 为什么&quot; → 半年后 <code>git log</code> 就是一份免费的项目史</li><li>先 <code>git diff</code> 再提交 → 企业里最常见的翻车是&quot;顺手把调试代码提交了&quot;</li></ul><hr class="divider"></section><section class="scene" id="sec-25"><div class="scene-head"><h2 id="sec-25">幕 6 · 交作业（发 PR，让代码从门里进）</h2><label class="done"><input type="checkbox" data-scene="sec-25"><span>已完成</span></label></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git push -u origin feature/followup-suggest</code></pre></div><p>推送后终端会直接打印一个创建 PR 的链接（形如 <code>https://github.com/.../compare/feature/followup-suggest?expand=1</code>），点开它。</p><p><strong>关键设置</strong>（漏了就白干）：</p><div class="table-wrap"><table><thead><tr><th>项</th><th>填什么</th></tr></thead><tbody><tr><td>base 分支</td><td><strong>develop</strong>（不是 main！）</td></tr><tr><td>标题</td><td><code>feat(chat): 回答后推荐 3 个相关追问</code></td></tr><tr><td>描述</td><td>模板会自动带出来，逐项填；在"关联 Issue"处写 <code>Closes #1</code></td></tr></tbody></table></div><p>描述示例：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>## 改了什么
+回答后按意图返回最多 3 条推荐追问，可点击继续提问。
+
+## 关联 Issue
+Closes #1
+
+## 怎么验证的
+- [x] pytest -q 全绿（23 passed）
+- [x] run_eval.py 合格率 100%
+- [x] 手动试过：退货问题返回 3 条推荐
+
+## 影响范围与风险
+改动 service 返回体（新增字段，向后兼容）；建议灰度 2 家商家观察点击率。</code></pre></div><p>点 <strong>Create pull request</strong>。</p><h3 id="sec-26">预期看到什么</h3><ol><li>页面底部出现两个检查项：<code>单元测试与评测</code>、<code>PR 标题规范检查</code></li><li>约 1 分钟后变成绿色 ✓（若红色，进幕 7）</li><li>如果设了 CODEOWNERS 且你改的是 <code>service.py</code>，右侧 Reviewers 会自动请求你审批</li><li>合并按钮显示 <strong>灰色</strong>，提示 &quot;Review required&quot; 或 &quot;Some checks haven&#x27;t completed&quot;</li></ol><p><strong>灰色按钮别慌，那是规则在起作用。</strong></p><hr class="divider"></section><section class="scene" id="sec-27"><div class="scene-head"><h2 id="sec-27">幕 7 · CI 红灯演练（故意弄红一次，你才懂绿灯的价值）</h2><label class="done"><input type="checkbox" data-scene="sec-27"><span>已完成</span></label></div><h3 id="sec-28">1 制造失败</h3><p>打开 <code>tests/test_suggestions.py</code>，把这一行故意改错：</p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>    def test_logistics_intent_returns_at_most_three(self):
+        items = suggest(LOGISTICS)
+        assert 1 &lt;= len(items) &lt;= 2      # 故意写错：实际返回 3 条，应为 3</code></pre></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git add tests/test_suggestions.py
+git commit -m &quot;test(suggestions): 调整断言（演练：故意制造失败）&quot;
+git push</code></pre></div><h3 id="sec-29">2 去 Actions 看红灯</h3><p>打开 <code>https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/actions</code>，点最新那次运行 → 点 <code>单元测试与评测</code> → 展开 <code>单元测试 + 覆盖率</code> 步骤，会看到：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>FAILED tests/test_suggestions.py::TestSuggest::test_logistics_intent_returns_at_most_three
+AssertionError: assert 3 &lt;= 2
+1 failed, 22 passed</code></pre></div><p>PR 页面顶部同时出现红叉，合并按钮变灰。</p><h3 id="sec-30">3 修绿</h3><p>把断言改回 <code>&lt;= 3</code>，然后：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git add tests/test_suggestions.py
+git commit -m &quot;test(suggestions): 修正断言上限为 3&quot;
+git push</code></pre></div><p>再看 Actions → 绿色 ✓ → PR 页面提示 &quot;All checks have passed&quot;。</p><h3 id="sec-31">为什么企业要这么做</h3><p>CI 的价值是<strong>把&quot;我以为没问题&quot;换成机器判断</strong>。你刚体验的这 3 分钟，就是企业里每天发生几十次的事：红灯 → 本机复现 → 修 → 推 → 绿灯。等红灯时不要去找人求放行，那是把自己的人品押上去；修绿才是唯一正解。</p><h3 id="sec-32">卡住了怎么办</h3><ul><li>Actions 没触发 → 检查 <code>Settings → Actions → General</code> 是否允许，以及 workflow 文件里 <code>on:</code> 是否包含 <code>pull_request</code></li><li>报 <code>pip install</code> 慢 → 正常，首次约 1 分钟，有 cache 后变快</li></ul><hr class="divider"></section><section class="scene" id="sec-33"><div class="scene-head"><h2 id="sec-33">幕 8 · 评审（你被&quot;挑刺&quot;，然后体面地改）</h2><label class="done"><input type="checkbox" data-scene="sec-33"><span>已完成</span></label></div><h3 id="sec-34">1 先解决一个现实问题：你只有一个人</h3><p>企业里&quot;至少 1 人批准&quot;需要第二个账号。三种做法，按真实度排序：</p><p><strong>方案 A（推荐）</strong>：注册/使用第二个 GitHub 账号 → 仓库 <code>Settings → Collaborators → Add people</code> 加进来 → 用浏览器<strong>无痕窗口</strong>登录小号打开你的 PR → 用&quot;Review changes&quot;提交评审意见。这样你能完整走一遍&quot;作者 vs 评审人&quot;的双向体验。</p><p><strong>方案 B</strong>：拉一位同事/朋友作为 collaborator，让他真实评审。</p><p><strong>方案 C（最低成本）</strong>：把分支保护的 <code>Require approvals</code> 设为 0，自己按下面的清单在 PR 里逐条留评论再 Resolve——动作是真的，只是少了他人把关。</p><h3 id="sec-35">2 评审人会这么说（真实话术）</h3><p>在 PR 的 Files changed 页面，对 <code>src/ecom_cs/service.py</code> 的 <code>_reply</code> 那几行发表评论：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>[blocking] 转人工时 suggestions 为空是对的，但&quot;ask_order_id&quot; 场景也返回空，
+用户刚被问订单号、正需要引导，这里应该给 1-2 条相关推荐，否则体验断档。</code></pre></div><p>再对 <code>suggestions.py</code> 评论一条：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>[suggestion] 建议把推荐话术常量提到文件顶部并加注释说明&quot;必须可被 detect_intent 识别&quot;，
+否则后人加一条识别不了的话术，验收标准 4 就悄悄失效了。</code></pre></div><h3 id="sec-36">3 你要怎么回应（企业礼仪 + 技术判断）</h3><ol><li><strong>不要沉默</strong>，每条 review 都要回一句：改了就写&quot;已修改，见 commit xxx&quot;；不改就说明理由</li><li><code>[blocking]</code> 必须改，除非你能给出更强理由并说服对方</li><li><code>[suggestion]</code> 可以讨论，但要明确表态（采纳/不采纳 + 原因）</li><li>改完点 <strong>Resolve conversation</strong>，然后 <code>git push</code> 新提交（PR 会自动更新）</li></ol><p><strong>这次我们采纳 [suggestion]（真有用），部分采纳 [blocking]</strong>：ask_order_id 场景加上推荐，但只给 1 条（避免追问订单号时信息过载）。</p><p>改 <code>service.py</code> 的 <code>_reply</code>：</p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>    # 转人工时不推荐；追问订单号时只给 1 条，避免信息过载
+    if transfer_to_human:
+        followups: list[str] = []
+    elif action == &quot;ask_order_id&quot;:
+        followups = suggest(intent)[:1]
+    else:
+        followups = suggest(intent)</code></pre></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>pytest -q
+git add src/ecom_cs/service.py
+git commit -m &quot;refactor(chat): 追问订单号场景保留 1 条推荐
+
+评审意见 #1：ask_order_id 场景不应完全无引导&quot;
+git push</code></pre></div><h3 id="sec-37">预期看到什么</h3><p>PR 页面出现新的提交、CI 重新跑、评论被标记 Resolved。若你设了 approvals 且有第二人，点 <strong>Approve</strong> 后合并按钮才变绿。</p><h3 id="sec-38">为什么企业要这么做</h3><p>评审不是为了挑错，是为了<strong>让代码在离开你脑子之前，先经过另一个人的脑子</strong>。规则里 <code>[blocking]/[suggestion]/[nit]</code> 这三档，就是让&quot;必须改&quot;和&quot;随便说说&quot;分开，避免作者把每条意见都当圣旨，也避免评审人用&quot;我觉得&quot;卡人。</p><hr class="divider"></section><section class="scene" id="sec-39"><div class="scene-head"><h2 id="sec-39">幕 9 · 合并（把 N 次提交压成 1 条干净历史）</h2><label class="done"><input type="checkbox" data-scene="sec-39"><span>已完成</span></label></div><p>PR 页面底部，合并按钮旁的下拉箭头 → 选 <strong>Squash and merge</strong> → 点按钮 → 确认弹窗里把提交信息整理成：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>feat(chat): 回答后推荐 3 个相关追问 (#2)</code></pre></div><p>→ <strong>Confirm squash and merge</strong> → 点 <strong>Delete branch</strong>。</p><p>回本地收尾：</p><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout develop
+git pull
+git branch -d feature/followup-suggest
+git log --oneline -3</code></pre></div><p>预期：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>b2c3d4e feat(chat): 回答后推荐 3 个相关追问 (#2)
+21ee0c0 docs: 补充架构决策、PRD 与值班手册</code></pre></div><blockquote><p>注意：你原来那 4 次提交（含&quot;故意制造失败&quot;那次）在 develop 上只剩 <strong>1 条</strong>——这就是 Squash。主分支历史永远是&quot;一条需求一条记录&quot;，而不是&quot;作者的思考过程&quot;。</p></blockquote><p>同时打开 Issue #1，它会因为 <code>Closes #1</code> <strong>自动关闭</strong>，状态显示 Closed。</p><h3 id="sec-40">为什么企业要这么做</h3><ul><li>Squash：主干历史可读，回滚一个功能就是回滚一个提交</li><li>合并后删分支：分支列表只剩活跃分支，避免&quot;300 条陈年分支&quot;</li><li><code>Closes #1</code> 自动关单：需求和代码自动对上账，不用人去点</li></ul><hr class="divider"></section><section class="scene" id="sec-41"><div class="scene-head"><h2 id="sec-41">幕 10 · 发布（打 tag + 写 Release）</h2><label class="done"><input type="checkbox" data-scene="sec-41"><span>已完成</span></label></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout main
+git pull
+git tag -a v0.2.0 -m &quot;v0.2.0 回答后推荐追问，引导用户继续提问&quot;
+git push origin v0.2.0</code></pre></div><p>然后打开 <code>https://github.com/&lt;你的用户名&gt;/ecom-ai-cs/releases/new</code>：</p><ul><li>Choose a tag：<code>v0.2.0</code></li><li>Release title：<code>v0.2.0 追问推荐</code></li><li>描述：</li></ul><div class="codebox"><div class="codebar"><span>markdown</span><button class="copy" type="button">复制</button></div><pre><code>## 新增
+- 机器人回答后推荐最多 3 条相关追问，可点击继续提问（#1）
+- 追问订单号场景保留 1 条推荐，避免引导断档
+
+## 验证
+- 23 个单测全绿
+- 评测集 10/10 通过，合格率 100%
+
+## 已知问题
+- 推荐话术暂未做个性化，全部按意图固定返回
+- 点击率未埋点，下迭代补充</code></pre></div><p>点 <strong>Publish release</strong>。</p><h3 id="sec-42">为什么企业要这么做</h3><p>tag 是&quot;可回滚的锚点&quot;。事故来了，值班人的第一句话永远是&quot;上一个可用版本是哪个 tag&quot;——没有 tag，回滚就是一句空话。Release notes 则让运营/客服知道&quot;这版改了什么&quot;，不用来问开发。</p><hr class="divider"></section><section class="scene" id="sec-43"><div class="scene-head"><h2 id="sec-43">幕 11 · 线上救火（hotfix 通道，S0 故障）</h2><label class="done"><input type="checkbox" data-scene="sec-43"><span>已完成</span></label></div><h3 id="sec-44">1 事故报告（模拟）</h3><blockquote><p><strong>周五 20:10 商家群反馈</strong>：用户说&quot;东西到货就坏了，我要退款&quot;，机器人回答&quot;退货签收后 1-3 个工作日原路退回&quot;，完全没提售后处理，用户直接投诉。<br>影响：质量问题投诉被当成普通退款咨询，涉及所有使用 AI 客服的商家。<br>定级：<strong>S0</strong>（商业影响 + 全量商家）。</p></blockquote><p>先在 Issue 里建一张 Bug 卡（用 Bug 模板）：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>标题：【Bug】质量投诉被当成普通退款，未转人工
+严重程度：S0 线上不可用（走 hotfix 通道）
+复现步骤：1. 打开客服窗口 2. 输入&quot;东西到货就坏了，我要退款&quot; 3. 观察回答
+期望：识别为质量投诉，立即转人工
+实际：回答退款到账时效，未转人工
+环境与版本：生产 v0.2.0</code></pre></div><p>假设编号是 <strong>#3</strong>。</p><h3 id="sec-45">2 本地先复现（救火第一原则：先看见，再动手）</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>cd &quot;C:/Users/Administrator/WorkBuddy/电商团队开发/ecom-ai-cs&quot;
+git checkout main &amp;&amp; git pull
+python chat.py &quot;东西到货就坏了，我要退款&quot;</code></pre></div><p>预期（这就是 Bug）：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>机器人：退货签收后 1-3 个工作日原路退回，银行卡到账可能再延迟 1-2 天。
+详情：意图=refund 转人工=False 引用=[&#x27;refund-process&#x27;]</code></pre></div><h3 id="sec-46">3 从 main 拉 hotfix 分支（注意：不是 develop）</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout -b hotfix/v0.2.1-quality-complaint</code></pre></div><p>改 <code>src/ecom_cs/service.py</code>，在 <code>handle</code> 开头、意图分支之前插入质量投诉判定：</p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code># 质量/破损类投诉必须人工介入：涉及赔偿，AI 不允许承诺任何方案
+QUALITY_COMPLAINT_KEYWORDS = (&quot;坏了&quot;, &quot;破损&quot;, &quot;质量问题&quot;, &quot;漏发&quot;, &quot;发霉&quot;, &quot;过敏&quot;)</code></pre></div><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code>    # 最高优先级：质量投诉一律转人工，不允许用退款政策话术敷衍
+    if any(word in text for word in QUALITY_COMPLAINT_KEYWORDS):
+        return _reply(TRANSFER_TEXT, intent, transfer_to_human=True, action=&quot;transfer_human&quot;)</code></pre></div><p>补一条回归测试（钉死这个 Bug，永不再犯）：</p><div class="codebox"><div class="codebar"><span>python</span><button class="copy" type="button">复制</button></div><pre><code># tests/test_service.py 末尾追加
+class TestQualityComplaint:
+    def test_damaged_item_goes_to_human(self):
+        result = handle(&quot;东西到货就坏了，我要退款&quot;)
+        assert result[&quot;need_human&quot;] is True
+        assert result[&quot;action&quot;] == &quot;transfer_human&quot;
+
+    def test_normal_refund_still_answered_by_ai(self):
+        # 防止修 Bug 修过头：普通退款咨询应继续由 AI 回答
+        result = handle(&quot;退款多久到账&quot;)
+        assert result[&quot;need_human&quot;] is False</code></pre></div><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>pytest -q
+python scripts/run_eval.py
+python chat.py &quot;东西到货就坏了，我要退款&quot;</code></pre></div><p>预期最后一条：</p><div class="codebox"><div class="codebar"><span>shell</span><button class="copy" type="button">复制</button></div><pre><code>机器人：这个问题我需要转接人工客服为您处理，请稍等。
+详情：意图=refund 转人工=True 引用=无</code></pre></div><h3 id="sec-47">4 提交并发 PR 到 main</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git add src/ecom_cs/service.py tests/test_service.py
+git commit -m &quot;fix(chat): 质量投诉强制转人工，禁止套用退款政策话术
+
+线上 S0：用户反馈商品损坏时，AI 只答退款时效未转人工。
+根因：refund 意图优先命中知识库，缺少质量投诉前置判定。
+Closes #3&quot;
+git push -u origin hotfix/v0.2.1-quality-complaint</code></pre></div><p>开 PR，<strong>base 选 main</strong>，标题 <code>fix(chat): 质量投诉强制转人工</code>，描述写明影响面、回滚方式（&quot;回滚到 v0.2.0&quot;）、验证结果。CI 绿 + 评审通过后，合并方式选 <strong>Merge commit</strong>（hotfix 保留原提交，便于追溯）。</p><h3 id="sec-48">5 打补丁版本并发布</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout main &amp;&amp; git pull
+git tag -a v0.2.1 -m &quot;v0.2.1 修复质量投诉未转人工（S0）&quot;
+git push origin v0.2.1</code></pre></div><p>在 Releases 页面发布 v0.2.1，说明里写清&quot;修复内容 + 影响范围 + 回滚方式&quot;。</p><h3 id="sec-49">6 最关键的一步：合回 develop（90% 的新人会忘）</h3><div class="codebox"><div class="codebar"><span>bash</span><button class="copy" type="button">复制</button></div><pre><code>git checkout develop
+git pull
+git merge main
+git push</code></pre></div><p><strong>为什么必须做</strong>：develop 上还在往下开发 v0.3.0，如果补丁只在 main 上，下次发版从 develop 出包时，<code>service.py</code> 又变回没有质量投诉判定的老版本——<strong>Bug 复活，而且没人知道为什么</strong>。</p><h3 id="sec-50">为什么企业要这么做</h3><ul><li>hotfix 从 main 拉：基于线上真实状态修，不夹带 develop 上未发布的功能</li><li>只改一个 Bug：插队通道越干净，回滚越容易</li><li>双写 main + develop：这是&quot;修好了&quot;和&quot;以后不再坏&quot;的区别</li></ul><h3 id="sec-51">卡住了怎么办</h3><ul><li>main 有保护规则推不上去 → 正常，hotfix 也必须走 PR（这就是规矩）</li><li>合并冲突 → 因为 main 和 develop 分叉了，手动解冲突后 <code>git add</code> + <code>git commit</code></li></ul><hr class="divider"></section><section class="scene" id="sec-52"><div class="scene-head"><h2 id="sec-52">幕 12 · 复盘（把事故变成资产）</h2><label class="done"><input type="checkbox" data-scene="sec-52"><span>已完成</span></label></div><p>新建 <code>docs/postmortem/2026-11-10-quality-complaint.md</code>：</p><div class="codebox"><div class="codebar"><span>markdown</span><button class="copy" type="button">复制</button></div><pre><code># 复盘：质量投诉未转人工（S0）
+
+- 时间：2026-11-10 20:10 发现，21:05 修复上线（55 分钟）
+- 影响：质量问题投诉被套用退款话术，涉及全部 AI 客服商家
+- 定级：S0
+- 关联：Issue #3 / PR #4 / v0.2.1
+
+## 时间线
+- 20:10 商家群反馈
+- 20:20 确认复现，定为 S0，拉群同步
+- 20:35 定位根因：refund 分支优先命中知识库，无质量投诉前置判定
+- 20:50 修复 + 回归测试通过，提 PR
+- 21:05 合并、打 tag、发布 v0.2.1
+
+## 根因
+1. 直接原因：意图判定只有&quot;退款&quot;维度，缺少&quot;投诉/质量&quot;这一高危维度
+2. 深层原因：评测集 10 题里没有一条质量投诉样本——**我们只测了自己想到的场景**
+
+## 做对了什么
+- 先复现再改代码，没有凭猜测动手
+- 修复同时补了回归测试（含&quot;修过头&quot;的反向用例）
+- 55 分钟恢复，未超过 S0 的 2 小时目标
+
+## 改进项（每条必须有人、有期限）
+| 改进 | 负责人 | 截止 |
+|------|--------|------|
+| 评测集扩充到 30 题，覆盖投诉/质量/议价等高危场景 | 你 | 11-17 |
+| 高危词表（投诉、赔偿、质量）统一收口到独立模块 | 你 | 11-20 |
+| PR 模板增加勾选项：&quot;是否覆盖高危场景样本&quot; | 你 | 11-13 |</code></pre></div><p>提交它（走正常 PR，<code>docs(postmortem): 补充质量投诉 S0 复盘</code>），本次演练结束。</p><hr class="divider"></section><section class="plain" id="sec-53"><h2 id="sec-53">通关后你应该能回答这 8 个问题</h2><ol><li>为什么不能直接 <code>git push origin main</code>？是谁拦住了你？</li><li>CI 红灯时，为什么&quot;求人放行&quot;是错误做法？</li><li><code>Closes #1</code> 起了什么作用？不写会怎样？</li><li>Squash 合并后，你原来的 4 次提交去哪了？为什么企业要这么做？</li><li>为什么 hotfix 要从 main 拉，而不是 develop？</li><li>补丁修完为什么必须 <code>git merge main</code> 回 develop？不做会发生什么？</li><li>CODEOWNERS 和分支保护，分别防的是哪种事故？</li><li>复盘里的&quot;改进项&quot;为什么必须写人和期限？</li></ol></section><section class="plain" id="sec-54"><h2 id="sec-54">附：一周工作节奏（把 12 幕变成日常）</h2><div class="table-wrap"><table><thead><tr><th>时间</th><th>动作</th></tr></thead><tbody><tr><td>每天早</td><td>看 PR/Issue 待办，<code>git checkout develop && git pull</code></td></tr><tr><td>开工前</td><td>从 develop 拉 feature 分支，先在 Issue 里认领</td></tr><tr><td>提交前</td><td><code>git diff</code> 自查 → <code>pytest -q</code> → <code>run_eval.py</code></td></tr><tr><td>提 PR 后</td><td>等 CI 绿，主动 @ 评审人，别静默等待</td></tr><tr><td>收到意见</td><td>逐条回应，改完 Resolve，别让评论悬着</td></tr><tr><td>合并后</td><td>删分支，回 develop 同步，把 Issue 状态确认关闭</td></tr><tr><td>每周五</td><td>看 Actions 失败率、看有没有超过 5 天没合的分支</td></tr></tbody></table></div></section>
+<footer class="end">本页由 tools/build_manual_html.py 从 Markdown 生成，修改内容请改 .md 后重新生成。</footer>
+</main>
+</div>
+<script>
+(function () {
+  var KEY = 'ecomcs-manual-progress-v1';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input[data-scene]'));
+  var bar = document.getElementById('progress-bar');
+  var text = document.getElementById('progress-text');
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function save(state) {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function refresh() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    bar.style.width = boxes.length ? (done / boxes.length * 100) + '%' : '0';
+    text.textContent = done + ' / ' + boxes.length;
+  }
+  var state = load();
+  boxes.forEach(function (box) {
+    var id = box.getAttribute('data-scene');
+    if (state[id]) { box.checked = true; box.closest('section').classList.add('done'); }
+    box.addEventListener('change', function () {
+      state[id] = box.checked;
+      box.closest('section').classList.toggle('done', box.checked);
+      save(state);
+      refresh();
+    });
+  });
+  refresh();
+
+  document.getElementById('print').addEventListener('click', function () { window.print(); });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    if (!confirm('确定清空全部完成记录？')) return;
+    state = {}; save(state);
+    boxes.forEach(function (b) { b.checked = false; b.closest('section').classList.remove('done'); });
+    refresh();
+  });
+
+  document.querySelectorAll('.codebar .copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var code = btn.closest('.codebox').querySelector('code').innerText;
+      var done = function () {
+        btn.textContent = '已复制'; btn.classList.add('ok');
+        setTimeout(function () { btn.textContent = '复制'; btn.classList.remove('ok'); }, 1400);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = code; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { alert('复制失败，请手动选中'); }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var targets = links.map(function (a) { return document.getElementById(a.getAttribute('data-target')); });
+  function onScroll() {
+    var pos = window.scrollY + 90, current = 0;
+    targets.forEach(function (t, i) { if (t && t.getBoundingClientRect().top + window.scrollY <= pos) current = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
