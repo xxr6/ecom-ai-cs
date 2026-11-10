@@ -1,0 +1,54 @@
+name: 需求（Feature Request）
+description: 提出一个新功能或改进，等同团队 Backlog 的需求卡
+title: "【功能】"
+labels: ["type/feature", "status/待评审"]
+body:
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - P0 紧急（影响商业目标，必须当迭代做）
+        - P1 重要（本季度要做）
+        - P2 可以等（有资源再说）
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景 / 问题
+      description: 为什么要做？最好带数据。例如"38% 的用户转人工是因为不知道还能问什么"
+      placeholder: 现状是什么，痛点在哪里，有什么数据支撑
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望方案
+      description: 你希望它怎么工作，不必写技术实现
+      placeholder: 用户看到什么、点击后发生什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      description: 满足什么条件才算做完。必须可检查，不能写"体验好一点"
+      placeholder: |
+        1. 机器人每次回答后展示 3 个推荐追问
+        2. 点击推荐项直接作为新问题发送
+        3. 无推荐时整块隐藏
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: 影响范围 / 风险
+      description: 涉及哪些模块？是否需要灰度？
+      placeholder: 涉及对话编排、前端 SDK；建议灰度 2 家商家
+    validations:
+      required: false

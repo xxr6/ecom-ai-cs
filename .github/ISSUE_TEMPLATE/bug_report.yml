@@ -1,0 +1,54 @@
+name: 缺陷（Bug Report）
+description: 报告一个问题，等同团队缺陷单
+title: "【Bug】"
+labels: ["type/bug", "status/待确认"]
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 严重程度
+      options:
+        - S0 线上不可用（走 hotfix 通道）
+        - S1 严重（核心功能受损，当迭代必修）
+        - S2 一般（有绕过方式）
+        - S3 轻微（体验瑕疵）
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 一步步写清楚，让别人能原样重现
+      placeholder: |
+        1. 打开商家后台客服窗口
+        2. 输入"我的快递到哪了 2024110001"
+        3. 观察返回内容
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为 / 实际行为
+      placeholder: |
+        期望：返回该订单的物流状态
+        实际：返回了其他商品的信息
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 环境与版本
+      placeholder: 生产环境 v0.1.0 / 测试环境
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志 / 截图
+      description: 粘贴关键报错或截图，脱敏后附上
+    validations:
+      required: false

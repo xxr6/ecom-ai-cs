@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: 单元测试与评测
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      - name: 单元测试 + 覆盖率
+        run: pytest -q --cov=ecom_cs --cov-report=term-missing
+      - name: AI 评测集（合格率低于 85% 即失败）
+        run: python scripts/run_eval.py --min-pass 0.85
+
+  pr-title:
+    name: PR 标题规范检查
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 校验 Conventional Commits 格式
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "PR 标题: $TITLE"
+          if echo "$TITLE" | grep -Eq '^(feat|fix|docs|test|refactor|chore|perf|build|ci)(\(.+\))?: .+'; then
+            echo "格式正确"
+          else
+            echo "标题不符合规范，示例：feat(chat): 支持猜你想问推荐"
+            exit 1
+          fi
