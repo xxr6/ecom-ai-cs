@@ -11,6 +11,7 @@ from typing import Any
 
 from . import knowledge
 from .intent import LOGISTICS, ORDER, REFUND, detect_intent, extract_order_id
+from .suggestions import suggest
 
 ASK_ORDER_ID = "麻烦提供一下订单号（8-20 位数字），我帮您查询～"
 TRANSFER_TEXT = "这个问题我需要转接人工客服为您处理，请稍等。"
@@ -36,12 +37,15 @@ def _reply(
     sources: list[str] | None = None,
     action: str = "answer",
 ) -> dict[str, Any]:
+    # 转人工与追问订单号时不推荐，避免用户被引到别的话题
+    followups = [] if transfer_to_human or action != "answer" else suggest(intent)
     return {
         "reply": text,
         "intent": intent,
         "need_human": transfer_to_human,
         "sources": sources or [],
         "action": action,
+        "suggestions": followups,
     }
 
 
@@ -83,10 +87,14 @@ def handle(text: str, session: Session | None = None) -> dict[str, Any]:
             faq = hits[0][0]
             return _reply(faq.answer, intent, sources=[faq.id])
         # 政策类问题检索不到就转人工，不允许模型自由发挥
-        return _reply(TRANSFER_TEXT, intent, transfer_to_human=True, action="transfer_human")
+        return _reply(
+            TRANSFER_TEXT, intent, transfer_to_human=True, action="transfer_human"
+        )
 
     answer, sources = knowledge.search_with_sources(text)
     if answer:
         return _reply(answer, intent, sources=sources)
 
-    return _reply(TRANSFER_TEXT, intent, transfer_to_human=True, action="transfer_human")
+    return _reply(
+        TRANSFER_TEXT, intent, transfer_to_human=True, action="transfer_human"
+    )
